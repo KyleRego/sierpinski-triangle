@@ -1,22 +1,26 @@
-const HEIGHT = 300
-const WIDTH = 300
+const HEIGHT = 300;
+const WIDTH = 300;
+const STROKEWIDTH = 0.05;
 
 let fractalContainer = document.createElement("div");
 fractalContainer.id = "fractal-container";
 fractalContainer.style.height = `${HEIGHT}px`;
 fractalContainer.style.width = `${WIDTH}px`;
-fractalContainer.style.backgroundColor = "lightgray";
+fractalContainer.style.backgroundColor = "white";
+fractalContainer.style.margin = "auto";
 document.body.appendChild(fractalContainer);
 
 let fractal = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 fractal.style.height = `${HEIGHT}px`;
 fractal.style.width = `${WIDTH}px`;
+fractal.setAttribute("xmlns", "http://www.w3.org/2000/svg")
 fractalContainer.append(fractal);
 
 let triangle = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
 triangle.setAttribute("points", "150,0 300,260 0,260");
 triangle.setAttribute("fill", "none");
 triangle.setAttribute("stroke", "red");
+triangle.setAttribute("stroke-width", `${STROKEWIDTH}`);
 fractal.appendChild(triangle);
 
 
@@ -47,6 +51,9 @@ function smallTriangle(triangle){
 }
 
 // SVGPolygonElement -> List of three SVGPolygonElements
+// takes a triangle and makes three new triangles that are
+// equivalent to drawing one triangle inside the big triangle
+// by connecting the midpoints of its sides
 function threeNewTriangles(triangle){
     let topTriangle_ = topTriangle(triangle);
     let leftBottomTriangle_ = leftBottom(triangle);
@@ -69,6 +76,7 @@ function topTriangle(triangle){
     newTriangle.setAttribute("points", `${newX1},${newY1} ${newX2},${newY2} ${newX3},${newY3}`);
     newTriangle.setAttribute("fill", "none");
     newTriangle.setAttribute("stroke", "red");
+    newTriangle.setAttribute("stroke-width", `${STROKEWIDTH}`);
     fractal.appendChild(newTriangle);
     return newTriangle;
 }
@@ -88,6 +96,7 @@ function leftBottom(triangle){
     newTriangle.setAttribute("points", `${newX1},${newY1} ${newX2},${newY2} ${newX3},${newY3}`);
     newTriangle.setAttribute("fill", "none");
     newTriangle.setAttribute("stroke", "red");
+    newTriangle.setAttribute("stroke-width", `${STROKEWIDTH}`);
     fractal.appendChild(newTriangle);
     return newTriangle;
 }
@@ -107,24 +116,18 @@ function rightBottom(triangle){
     newTriangle.setAttribute("points", `${newX1},${newY1} ${newX2},${newY2} ${newX3},${newY3}`);
     newTriangle.setAttribute("fill", "none");
     newTriangle.setAttribute("stroke", "red");
+    newTriangle.setAttribute("stroke-width", `${STROKEWIDTH}`);
     fractal.appendChild(newTriangle);
     return newTriangle;
 }
 
-let threeTriangles = threeNewTriangles(triangle);
-for (let triangle of threeTriangles){
-    threeTriangles = threeNewTriangles(triangle);
-    for (let triangle of threeTriangles){
-        threeTriangles = threeNewTriangles(triangle);
-        for (let triangle of threeTriangles){
-            threeTriangles = threeNewTriangles(triangle);
-            for (let triangle of threeTriangles){
-                threeTriangles = threeNewTriangles(triangle);
-                for (let triangle of threeTriangles){
-                    threeTriangles = threeNewTriangles(triangle);
-                }
-            }
-        }
-    }
-
+function main(triangle, max){
+    if (max != 0){
+        let threeTriangles = threeNewTriangles(triangle);
+        main(threeTriangles[0], max-1);
+        main(threeTriangles[1], max-1);
+        main(threeTriangles[2], max-1);
+    }  
 }
+
+main(triangle, 8);
